@@ -1,0 +1,20 @@
+# Scoped AppProject: only this repo, only the in-cluster API server.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: eka
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  description: research-redis on kind
+  sourceRepos:
+    - https://github.com/eka-research/research-redis-gitops.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: "*"
+  # The gateway controller ships CRDs, ClusterRoles and webhooks. Tighten this
+  # once the platform/app split moves into separate projects.
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"

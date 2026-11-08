@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+# DEV-ONLY credentials for the throwaway kind cluster. This repo is public.
+secretGenerator:
+  - name: mysql-auth
+    namespace: eka-data
+    literals:
+      - root-password=kind-dev-mysql-root-pw
+      - database=eka
+      - user=eka
+      - password=kind-dev-mysql-pw

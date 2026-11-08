@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: eka-api
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: research-redis
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - serviceaccount.yaml
+  - migrate-job.yaml
+  - deployment.yaml
+  - service.yaml
+  - httproute.yaml
+  - pdb.yaml
+  - networkpolicy.yaml
+configMapGenerator:
+  - name: api-config
+    options:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    literals:
+      - LOG_LEVEL=info
+      - CACHE_TTL_SECONDS=60
+      - DEP_TIMEOUT_MS=1000
+      - SHUTDOWN_DELAY_MS=5000
+      - REDIS_HOST=redis.eka-data.svc.cluster.local
+      - REDIS_PORT=6379
+      - MYSQL_HOST=mysql.eka-data.svc.cluster.local
+      - MYSQL_PORT=3306
+      - ES_URL=http://elasticsearch.eka-data.svc.cluster.local:9200
+      - ES_INDEX=items
+images:
+  - name: research-redis
+    newName: ghcr.io/eka-research/research-redis
+    newTag: dev

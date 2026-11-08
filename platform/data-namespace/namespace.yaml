@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eka-data
+  labels:
+    app.kubernetes.io/part-of: research-redis
+    # ES needs a non-root UID 1000 + group 0; everything else is non-root too.
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted

@@ -1,0 +1,22 @@
+# Root app-of-apps. Applied once by app/scripts/argocd-bootstrap.sh. After that
+# everything under clusters/kind/apps is reconciled from git.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/eka-research/research-redis-gitops.git
+    targetRevision: main
+    path: clusters/kind/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

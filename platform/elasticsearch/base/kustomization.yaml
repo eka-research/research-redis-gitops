@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: eka-data
+labels:
+  - pairs:
+      app.kubernetes.io/name: elasticsearch
+      app.kubernetes.io/part-of: research-redis
+    includeSelectors: true
+resources:
+  - statefulset.yaml
+  - service.yaml
+configMapGenerator:
+  - name: elasticsearch-env
+    literals:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      # Single-node with no transport peers: TLS can be off. Auth stays on.
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.ml.enabled=false
+      # Use fixed byte watermarks instead of percentage defaults so local
+      # container storage does not prematurely trigger read_only_allow_delete.
+      - cluster.routing.allocation.disk.watermark.low=3gb
+      - cluster.routing.allocation.disk.watermark.high=2gb
+      - cluster.routing.allocation.disk.watermark.flood_stage=1gb
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g

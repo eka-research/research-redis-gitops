@@ -1,0 +1,35 @@
+# Zero-trust data tier: deny all ingress, then allow only the API namespace
+# (and intra-namespace traffic) to reach the store ports.
+# kindnet enforces NetworkPolicy since kind v0.24.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: eka-data
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api-to-stores
+  namespace: eka-data
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values: ["redis", "mysql", "elasticsearch"]
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: eka-api
+        - podSelector: {}
+      ports:
+        - { protocol: TCP, port: 6379 }
+        - { protocol: TCP, port: 3306 }
+        - { protocol: TCP, port: 9200 }
+        - { protocol: TCP, port: 9300 }

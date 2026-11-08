@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+# DEV-ONLY credentials. They must match platform/*/overlays/kind. This repo is public.
+secretGenerator:
+  - name: api-secrets
+    namespace: eka-api
+    options:
+      annotations:
+        argocd.argoproj.io/sync-wave: "-1"
+    literals:
+      - REDIS_PASSWORD=kind-dev-redis-pw
+      - MYSQL_DATABASE=eka
+      - MYSQL_USER=eka
+      - MYSQL_PASSWORD=kind-dev-mysql-pw
+      - ES_USERNAME=elastic
+      - ES_PASSWORD=kind-dev-elastic-pw
+# CI's release workflow bumps this with `kustomize edit set image`.
+images:
+  - name: research-redis
+    newName: ghcr.io/eka-research/research-redis
+    newTag: dev

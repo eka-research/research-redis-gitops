@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Namespaces and NetworkPolicies for the data tier. Applied before the stores.
+resources:
+  - namespace.yaml
+  - networkpolicy.yaml

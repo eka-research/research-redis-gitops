@@ -1,0 +1,28 @@
+# Data-plane Service as a NodePort on 30080. kind maps 127.0.0.1:80 on the host
+# to 30080 on the control-plane node (app/kind/cluster.yaml). No LoadBalancer
+# implementation is needed.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: kind-nodeport
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        replicas: 1
+        container:
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }
+      envoyService:
+        type: NodePort
+        externalTrafficPolicy: Cluster
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              ports:
+                - port: 80
+                  nodePort: 30080

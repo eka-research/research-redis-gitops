@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-headless
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: http
+      port: 9200
+      targetPort: http
+    - name: transport
+      port: 9300
+      targetPort: transport
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+    - name: http
+      port: 9200
+      targetPort: http

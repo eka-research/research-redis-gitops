@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+data:
+  # Local only: serve the UI over plain HTTP behind `kubectl port-forward`.
+  server.insecure: "true"
