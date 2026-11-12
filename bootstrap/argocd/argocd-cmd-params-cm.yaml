@@ -5,3 +5,6 @@ metadata:
 data:
   # Local only: serve the UI over plain HTTP behind `kubectl port-forward`.
   server.insecure: "true"
+  # Match ServerSideApply=true with Server-Side Diff so API-server schema defaults
+  # (StatefulSet volumeClaimTemplates, Gateway API HTTPRoute refs) don't show false OutOfSync.
+  controller.diff.server.side: "true"
